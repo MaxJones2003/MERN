@@ -25,10 +25,16 @@ const FriendsPanel = ({ selectedFriend, onSelectFriend, activeTab, onTabChange }
     loading,
     error,
     addFriend,
+    acceptFriendRequest,
+    declineFriendRequest,
   } = useFriendsChat();
 
   const [showAddFriendModal, setShowAddFriendModal] = useState(false);
   const [isAddingFriend, setIsAddingFriend] = useState(false);
+
+  // Per-request loading & error state
+  const [actionLoading, setActionLoading] = useState<Record<string, boolean>>({});
+  const [actionError, setActionError] = useState<Record<string, string>>({});
 
   const handleAddFriend = async (username: string): Promise<boolean> => {
     setIsAddingFriend(true);
@@ -42,36 +48,58 @@ const FriendsPanel = ({ selectedFriend, onSelectFriend, activeTab, onTabChange }
     }
   };
 
+  const handleAccept = async (friendId: string) => {
+    setActionLoading(s => ({ ...s, [friendId]: true }));
+    setActionError(s => ({ ...s, [friendId]: '' }));
+    try {
+      const success = await acceptFriendRequest(friendId);
+      if (!success) throw new Error('Failed to accept request');
+    } catch (e) {
+      setActionError(s => ({ ...s, [friendId]: (e as Error).message }));
+    } finally {
+      setActionLoading(s => ({ ...s, [friendId]: false }));
+    }
+  };
+
+  const handleDecline = async (friendId: string) => {
+    setActionLoading(s => ({ ...s, [friendId]: true }));
+    setActionError(s => ({ ...s, [friendId]: '' }));
+    try {
+      const success = await declineFriendRequest(friendId);
+      if (!success) throw new Error('Failed to decline request');
+    } catch (e) {
+      setActionError(s => ({ ...s, [friendId]: (e as Error).message }));
+    } finally {
+      setActionLoading(s => ({ ...s, [friendId]: false }));
+    }
+  };
+
   return (
     <div className="friends-panel">
       <header className="friends-topbar">
         <div className="friends-topbar-left">
           <div className="friends-topbar-title">
-            <span className="friends-title-icon" aria-hidden="true">
-              F
-            </span>
+            <span className="friends-title-icon" aria-hidden="true">F</span>
             <span className="friends-title-text">Friends</span>
           </div>
-          <span className="friends-topbar-sep" aria-hidden="true">
-            •
-          </span>
+          <span className="friends-topbar-sep" aria-hidden="true">•</span>
           <nav className="friends-topbar-tabs" aria-label="Friends tabs">
-            <button 
-              className={`friends-tab ${activeTab === 'online' ? 'friends-tab-active' : ''}`} 
+            <button
+              className={`friends-tab ${activeTab === 'online' ? 'friends-tab-active' : ''}`}
               type="button"
               onClick={() => onTabChange('online')}
             >
               Online
             </button>
-            <button 
-              className={`friends-tab ${activeTab === 'all' ? 'friends-tab-active' : ''}`} 
+            <button
+              className={`friends-tab ${activeTab === 'all' ? 'friends-tab-active' : ''}`}
               type="button"
               onClick={() => onTabChange('all')}
             >
               All
             </button>
-            <button 
-              className={`friends-tab ${activeTab === 'requests' ? 'friends-tab-active' : ''}`} 
+            <button
+              className={`friends-tab ${activeTab === 'requests' ? 'friends-tab-active' : ''}`}
               type="button"
               onClick={() => onTabChange('requests')}
             >
@@ -94,46 +122,48 @@ const FriendsPanel = ({ selectedFriend, onSelectFriend, activeTab, onTabChange }
 
       <section className="friends-list" aria-label="Friends list">
         {loading && <div className="friends-empty">Loading...</div>}
-        {!loading && error && (
-          <div className="friends-empty">{error}</div>
-        )}
-        
-        {!loading && !error && friends.length === 0 && activeTab !== 'requests' && (
-          <div className="friends-empty">
-            <p>No friends yet.</p>
-            <span>Once you add friends, they will show up here.</span>
-          </div>
-        )}
+        {!loading && error && <div className="friends-empty">{error}</div>}
 
-        {!loading && !error && activeTab !== 'requests' && friends.length > 0 && (
+        {/* ── Online / All tab ── */}
+        {!loading && !error && activeTab !== 'requests' && (
           <>
-            <div style={{ paddingTop: '16px', paddingBottom: '8px' }}>
-              <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#ffffff', margin: '0 12px' }}>
-                Friends
-              </h2>
-            </div>
-            {friends.map((friend) => (
-              <article
-                className={`friend-card ${selectedFriend?._id === friend._id ? 'friend-card-active' : ''}`}
-                key={friend._id}
-                onClick={() => onSelectFriend(friend)}
-              >
-                <div className="friend-avatar">
-                  {friend.profilePicture ? (
-                    <img src={normalizeProfilePicturePath(friend.profilePicture)} alt={friend.username} />
-                  ) : (
-                    <span>{(friend.username || '?')[0]}</span>
-                  )}
+            {friends.length === 0 ? (
+              <div className="friends-empty">
+                <p>No friends yet.</p>
+                <span>Once you add friends, they will show up here.</span>
+              </div>
+            ) : (
+              <>
+                <div style={{ paddingTop: '16px', paddingBottom: '8px' }}>
+                  <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#ffffff', margin: '0 12px' }}>
+                    Friends
+                  </h2>
                 </div>
-                <div className="friend-meta">
-                  <h2>{friend.username || 'Unknown user'}</h2>
-                  <p>{friend.online ? 'Online' : 'Offline'}</p>
-                </div>
-              </article>
-            ))}
+                {friends.map((friend) => (
+                  <article
+                    className={`friend-card ${selectedFriend?._id === friend._id ? 'friend-card-active' : ''}`}
+                    key={friend._id}
+                    onClick={() => onSelectFriend(friend)}
+                  >
+                    <div className="friend-avatar">
+                      {friend.profilePicture ? (
+                        <img src={normalizeProfilePicturePath(friend.profilePicture)} alt={friend.username} />
+                      ) : (
+                        <span>{(friend.username || '?')[0]}</span>
+                      )}
+                    </div>
+                    <div className="friend-meta">
+                      <h2>{friend.username || 'Unknown user'}</h2>
+                      <p>{friend.online ? 'Online' : 'Offline'}</p>
+                    </div>
+                  </article>
+                ))}
+              </>
+            )}
           </>
         )}
 
+        {/* ── Requests tab ── */}
         {!loading && !error && activeTab === 'requests' && (
           <>
             {pendingRequests.length === 0 && friends.length === 0 ? (
@@ -145,11 +175,13 @@ const FriendsPanel = ({ selectedFriend, onSelectFriend, activeTab, onTabChange }
               <>
                 {pendingRequests.length > 0 && (
                   <>
+                    <div style={{ paddingTop: '16px', paddingBottom: '4px' }}>
+                      <h3 style={{ fontSize: '0.75rem', fontWeight: '600', textTransform: 'uppercase', color: '#9aa3b2', margin: '0 12px 8px' }}>
+                        Incoming — {pendingRequests.length}
+                      </h3>
+                    </div>
                     {pendingRequests.map((request) => (
-                      <article
-                        className="friend-card friend-request-card"
-                        key={request._id}
-                      >
+                      <article className="friend-card friend-request-card" key={request._id}>
                         <div className="friend-avatar">
                           {request.profilePicture ? (
                             <img src={normalizeProfilePicturePath(request.profilePicture)} alt={request.username} />
@@ -160,15 +192,43 @@ const FriendsPanel = ({ selectedFriend, onSelectFriend, activeTab, onTabChange }
                         <div className="friend-meta">
                           <h2>{request.username || 'Unknown user'}</h2>
                           <p>wants to be friends</p>
+                          {actionError[request._id] && (
+                            <p className="friend-request-error">{actionError[request._id]}</p>
+                          )}
+                        </div>
+                        <div className="friend-request-actions">
+                          {actionLoading[request._id] ? (
+                            <span className="friend-request-spinner" />
+                          ) : (
+                            <>
+                              <button
+                                className="friend-request-btn friend-request-btn--accept"
+                                onClick={() => handleAccept(request._id)}
+                                title="Accept"
+                                aria-label={`Accept friend request from ${request.username}`}
+                              >
+                                ✓
+                              </button>
+                              <button
+                                className="friend-request-btn friend-request-btn--decline"
+                                onClick={() => handleDecline(request._id)}
+                                title="Decline"
+                                aria-label={`Decline friend request from ${request.username}`}
+                              >
+                                ✕
+                              </button>
+                            </>
+                          )}
                         </div>
                       </article>
                     ))}
                   </>
                 )}
+
                 {friends.length > 0 && (
                   <>
                     <div style={{ paddingTop: '16px', borderTop: '1px solid #2f3746' }}>
-                      <h3 style={{ fontSize: '0.75rem', fontWeight: '600', textTransform: 'uppercase', color: '#72767d', margin: '8px 12px 8px 12px' }}>
+                      <h3 style={{ fontSize: '0.75rem', fontWeight: '600', textTransform: 'uppercase', color: '#72767d', margin: '8px 12px' }}>
                         All Friends
                       </h3>
                     </div>
