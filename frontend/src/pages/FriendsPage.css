@@ -1,51 +1,26 @@
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap');
+/* FriendsPage.css */
 
-/* Main Screen Layout */
 .friends-screen {
   position: fixed;
   inset: 0;
-  font-family: 'Manrope', sans-serif;
-  color: #e6e9ee;
-  background: #1f232b;
+  font-family: var(--font);
+  color: var(--text-primary);
+  background: var(--bg-tertiary);
   display: grid;
-  grid-template-columns: 72px 350px 1fr;
-  grid-template-rows: 1fr;
-  gap: 0;
+  grid-template-columns: 72px 280px 1fr;
   overflow: hidden;
 }
 
-.friends-glow {
-  display: none;
-}
-
-/* Responsive Layout */
 @media (max-width: 1024px) {
-  .friends-screen {
-    grid-template-columns: 72px 280px 1fr;
-  }
+  .friends-screen { grid-template-columns: 72px 240px 1fr; }
 }
 
 @media (max-width: 768px) {
-  .friends-screen {
-    grid-template-columns: 72px 250px 1fr;
-  }
+  .friends-screen { grid-template-columns: 72px 1fr; }
+  .chat-area { display: none; }
+  .chat-area.active { display: grid; }
 }
 
 @media (max-width: 540px) {
-  .friends-screen {
-    grid-template-columns: 1fr;
-  }
-
-  .chat-area {
-    display: none;
-  }
-
-  .chat-area.active {
-    display: grid;
-    grid-template-columns: 1fr;
-  }
-
-  .friends-panel.hidden {
-    display: none;
-  }
+  .friends-screen { grid-template-columns: 1fr; }
 }

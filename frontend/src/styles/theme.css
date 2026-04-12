@@ -1,0 +1,56 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
+
+:root {
+  /* ── Backgrounds (dark → darker) ──────────────────────── */
+  --bg-primary:    #313338;   /* main content panels        */
+  --bg-secondary:  #2b2d31;   /* channel / friends sidebar  */
+  --bg-tertiary:   #1e1f22;   /* server rail, inputs        */
+  --bg-quaternary: #111214;   /* dropdowns, tooltips        */
+  --bg-surface:    #232428;   /* user panel, modal footers  */
+  --bg-modal:      #313338;   /* modal backgrounds          */
+  --bg-hover:      #35373c;   /* row hover                  */
+  --bg-active:     #404249;   /* selected row               */
+  --bg-input:      #1e1f22;   /* text inputs                */
+  --bg-input-focus:#000000;   /* focused input              */
+
+  /* ── Text ─────────────────────────────────────────────── */
+  --text-primary:     #f2f3f5;
+  --text-secondary:   #dbdee1;
+  --text-muted:       #b5bac1;
+  --text-faint:       #949ba4;
+  --text-placeholder: #6d6f78;
+
+  /* ── Accent / Brand ───────────────────────────────────── */
+  --accent:       #5865f2;
+  --accent-hover: #4752c4;
+  --accent-dim:   rgba(88, 101, 242, 0.15);
+
+  /* ── Status ───────────────────────────────────────────── */
+  --success:       #3ba55c;
+  --success-hover: #2d8048;
+  --danger:        #ed4245;
+  --danger-hover:  #c03537;
+  --warning:       #faa61a;
+
+  /* ── Borders ──────────────────────────────────────────── */
+  --border:     #1e1f22;
+  --border-mid: #3f4147;
+
+  /* ── Radius ───────────────────────────────────────────── */
+  --r-xs:   3px;
+  --r-sm:   4px;
+  --r-md:   8px;
+  --r-lg:   12px;
+  --r-pill: 999px;
+
+  /* ── Typography ───────────────────────────────────────── */
+  --font: 'Manrope', system-ui, -apple-system, sans-serif;
+
+  /* ── Shadows ──────────────────────────────────────────── */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.5);
+
+  /* ── Motion ───────────────────────────────────────────── */
+  --ease: 0.15s ease;
+}
