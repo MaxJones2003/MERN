@@ -18,6 +18,12 @@ const ProfileModal = ({ isOpen, onClose, onProfilePictureUpdated }: ProfileModal
     '/avatars/dog.jpg',
     '/avatars/juan.jpg',
     '/avatars/CoolLlama.jpg',
+    '/avatars/angrycat.jpg',
+    '/avatars/bird.jpg',
+    '/avatars/businessdog.jpg',
+    '/avatars/deal.jpg',
+    '/avatars/itsfine.jpg',
+    '/avatars/baby.jpg',
   ]);
 
   const userId = useMemo(() => {

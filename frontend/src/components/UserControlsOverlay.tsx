@@ -25,7 +25,17 @@ const UserControlsOverlay = ({ onClose, isServerPage = false, serverId, onProfil
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeletingAccount, setIsDeletingAccount] = useState(false);
 
-  const availableAvatars = ['/avatars/dog.jpg', '/avatars/juan.jpg', '/avatars/CoolLlama.jpg'];
+  const availableAvatars = [
+    '/avatars/dog.jpg',
+    '/avatars/juan.jpg',
+    '/avatars/CoolLlama.jpg',
+    '/avatars/angrycat.jpg',
+    '/avatars/bird.jpg',
+    '/avatars/businessdog.jpg',
+    '/avatars/deal.jpg',
+    '/avatars/itsfine.jpg',
+    '/avatars/baby.jpg',
+  ];
 
   const userId = useMemo(() => {
     try {
