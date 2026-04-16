@@ -213,6 +213,7 @@ const deleteServer = async (req, res) => {
 
     const db = client.db('discord_clone');
     const serverObjId = new ObjectId(serverId);
+    const userObjId = new ObjectId(userId);
 
     const server = await db.collection('servers').findOne({ _id: serverObjId });
     if (!server) {
@@ -221,7 +222,7 @@ const deleteServer = async (req, res) => {
     }
 
     // Verify that the user is the server owner
-    if (server.ownerId !== userId) {
+    if (!server.ownerId.equals(userObjId)) {
       error = 'Only the server owner can delete this server';
       return res.status(403).json({ message: '', error });
     }
